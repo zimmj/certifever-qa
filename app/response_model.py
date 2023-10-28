@@ -9,7 +9,18 @@ class BinaryQuestion(BaseModel):
     question: str
     correct_answer: int
     explanation: str
+    example: str
 
+
+class BinaryQuestions(BaseModel):
+    data: List[BinaryQuestion]
+
+class TopicName(BaseModel):
+    topic: str
+
+class UploadFile(BaseModel):
+    topic: str
+    file: str
 
 class MultipleChoiceQuestion(BaseModel):
     topic: str
@@ -20,6 +31,11 @@ class MultipleChoiceQuestion(BaseModel):
     wrong_answer2: str
     wrong_answer3: str
     explanation: str
+    explanation: str
 
 class GetQuestion(BaseModel):
     id: int
+
+class GetBinaryQuestionsByTopicAndDifficulty(BaseModel):
+    topic: str
+    difficulty: int

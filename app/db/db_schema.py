@@ -11,6 +11,7 @@ class BinaryQuestion(Base):
     question = Column(String, nullable=False)
     correct_answer = Column(Integer, nullable=False)
     explanation = Column(String, nullable=True)
+    example = Column(String, nullable=True)
 
 class MultipleChoiceQuestion(Base):
     __tablename__ = 'questions_mutliplechoice'
@@ -23,3 +24,4 @@ class MultipleChoiceQuestion(Base):
     wrong_answer2 = Column(String, nullable=False)
     wrong_answer3 = Column(String, nullable=False)
     explanation = Column(String, nullable=True)
+    example = Column(String, nullable=True)

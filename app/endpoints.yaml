@@ -8,6 +8,17 @@ create_bin_question:
   methods: ["POST"]
   description: "Create a new binary question"
 
+get_bin_questions:
+  path: "/get_bin_questions"
+  methods: [ "GET" ]
+  description: "Get bin question list by difficulty level"
+
+create_bin_quiz_by_uploading_file:
+  path: "/create_bin_quiz_by_uploading_file"
+  methods: [ "POST" ]
+  description: "Create a quiz by uploading a file"
+
+
 get_bin_question:
   path: "/get_bin_question"
   methods: ["GET"]

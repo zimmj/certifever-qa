@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from app.db import db_schema as schema
-
+from typing import List
 
 class Repo:
     def __init__(self, db: Session):
@@ -24,7 +24,8 @@ class BinaryQuestionRepo(Repo):
             difficulty: int,
             question: str,
             correct_answer: int,
-            explanation: str
+            explanation: str,
+            example: str
     ) -> schema.BinaryQuestion:
 
         db_question = schema.BinaryQuestion(
@@ -32,10 +33,20 @@ class BinaryQuestionRepo(Repo):
             difficulty=difficulty,
             question=question,
             correct_answer=correct_answer,
-            explanation=explanation
+            explanation=explanation,
+            example=example
         )
         return self._add_entry(db_question)
 
+    def getBinaryQuestionsByTopicAndDifficulty(
+            self
+            , topic: str
+            , difficulty: int) -> List[schema.BinaryQuestion]:
+        questions = self._db.query(schema.BinaryQuestion)\
+            .filter(schema.BinaryQuestion.topic == topic)\
+            .filter(schema.BinaryQuestion.difficulty == difficulty)\
+            .all()
+        return questions if questions else []  # Returning a list or an empty list if no questions found
     def get(
             self,
             question_id: int
