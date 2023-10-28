@@ -20,17 +20,19 @@ class BinaryQuestionRepo(Repo):
 
     def create(
             self,
+            topic: str,
             difficulty: int,
-            desc: str,
-            choice_1: str,
-            choice_2: str
+            question: str,
+            correct_answer: int,
+            explanation: str
     ) -> schema.BinaryQuestion:
 
         db_question = schema.BinaryQuestion(
+            topic=topic,
             difficulty=difficulty,
-            desc=desc,
-            choice_1=choice_1,
-            choice_2=choice_2
+            question=question,
+            correct_answer=correct_answer,
+            explanation=explanation
         )
         return self._add_entry(db_question)
 

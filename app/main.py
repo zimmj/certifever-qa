@@ -47,10 +47,11 @@ def create_binary_question(
 
     # WARNING: we are not checking if there's duplicate now
     bin_question = bin_question_repo.create(
+        topic=bin_question.topic,
         difficulty=bin_question.difficulty,
-        desc=bin_question.desc,
-        choice_1=bin_question.choice_1,
-        choice_2=bin_question.choice_2
+        question=bin_question.desc,
+        correct_answer=bin_question.correct_answer,
+        explanation=bin_question.explanation
     )
 
     return {"message": f"BinaryQuestion created successfully, id = {bin_question.id}"}
