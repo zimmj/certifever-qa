@@ -1,14 +1,13 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import and_
 
-from app.db import db_models as m
+from app.db import db_schema as schema
 
 
 class Repo:
     def __init__(self, db: Session):
         self._db = db
 
-    def _add_entry(self, db_entry: m.Base):
+    def _add_entry(self, db_entry: schema.Base):
         self._db.add(db_entry)
         self._db.commit()
         self._db.refresh(db_entry)
@@ -25,9 +24,9 @@ class BinaryQuestionRepo(Repo):
             desc: str,
             choice_1: str,
             choice_2: str
-    ) -> m.BinaryQuestion:
+    ) -> schema.BinaryQuestion:
 
-        db_question = m.BinaryQuestion(
+        db_question = schema.BinaryQuestion(
             difficulty=difficulty,
             desc=desc,
             choice_1=choice_1,
@@ -38,5 +37,5 @@ class BinaryQuestionRepo(Repo):
     def get(
             self,
             question_id: int
-    ) -> m.BinaryQuestion | None:
-        return self._db.query(m.BinaryQuestion).filter(m.BinaryQuestion.id == question_id).first()
+    ) -> schema.BinaryQuestion | None:
+        return self._db.query(schema.BinaryQuestion).filter(schema.BinaryQuestion.id == question_id).first()

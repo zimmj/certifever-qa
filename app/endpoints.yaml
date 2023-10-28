@@ -2,3 +2,13 @@ root:
   path: "/"
   methods: ["GET"]
   description: "Root endpoint"
+
+create_bin_question:
+  path: "/create_bin_question"
+  methods: ["POST"]
+  description: "Create a new binary question"
+
+get_bin_question:
+  path: "/get_bin_question"
+  methods: ["GET"]
+  description: "Get a binary question"
