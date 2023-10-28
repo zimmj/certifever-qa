@@ -1,6 +1,4 @@
-fastapi
-uvicorn
-python-multipart
-sqlalchemy
-httpx
-omegaconf
+root:
+  path: "/"
+  methods: ["GET"]
+  description: "Root endpoint"
