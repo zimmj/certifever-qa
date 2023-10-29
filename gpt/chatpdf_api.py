@@ -86,12 +86,13 @@ class gpt_api:
 
     def ask_prompt(self):
         raise NotImplementedError
-
+"""
 topic = "python"
 profile = f"I am a student. I want to learn to code {topic}"
 test_api = gpt_api()
 result = test_api.init_question(profile=profile, topic=topic)
 print(result)
+"""
 ### example run
 def gpt_example_run():
     tmp_api = gpt_api("catch me if you can")
