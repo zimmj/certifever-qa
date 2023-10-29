@@ -31,7 +31,7 @@ class gpt_api:
         if key:
             self.key = key
         else:
-            self.key = None
+            self.read_key_from_file("gpt/api_key.txt")
 
     def read_key_from_file(self, file_name="api_key.txt"):
         with open(file_name, 'r') as file:
@@ -76,13 +76,22 @@ class gpt_api:
             print(response)
         return response
 
+    def init_question(self, profile, topic, num_q=5, diff="medium"):
+        """MUST BE A CODING LANGUAGE AS TOPIC!!"""
+        question = profile + f"Give me 5 multiple choice questions regarding the {topic} of {diff} difficulity." + JSON_STYLE
+        return self.prompt(question) 
+
     def create_prompt(self):
         raise NotImplementedError
 
     def ask_prompt(self):
         raise NotImplementedError
 
-
+topic = "python"
+profile = f"I am a student. I want to learn to code {topic}"
+test_api = gpt_api()
+result = test_api.init_question(profile=profile, topic=topic)
+print(result)
 ### example run
 def gpt_example_run():
     tmp_api = gpt_api("catch me if you can")

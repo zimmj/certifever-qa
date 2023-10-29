@@ -10,7 +10,7 @@ from fastapi import FastAPI, Depends, HTTPException
 from app.db.database import SessionLocal, engine, Base
 import app.response_model as model
 from app.db.crud import BinaryQuestionRepo
-from gpt.chatpdf_api import any_api
+from gpt.chatpdf_api import any_api, gpt_api
 
 logger = logging.getLogger(__name__)
 server = FastAPI()
@@ -113,10 +113,10 @@ def prepare_question_response(result):
 def create_questions_with_topic(
         create_question_model: Annotated[model.CreateQuestionModelWithTopic, Depends()],
 ):
-    profile = f"I am a {create_question_model.profile}. I want to learn for {create_question_model.intent}"
+    profile = f"I am a {create_question_model.profile}. I want to learn to code {create_question_model.topic}. I want to learn for {create_question_model.intent}"
     # run question creator
-    our_api = any_api()
-    result = our_api.init_question(profile=profile, key_path=key_path)
+    our_api = gpt_api()
+    result = our_api.init_question(profile=profile, topic=create_question_model.topic)
     return prepare_question_response(result)
 
 
