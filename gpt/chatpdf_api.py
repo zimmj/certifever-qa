@@ -4,11 +4,12 @@ from chat_prompt import gpt_api
 
 import openai
 import os
-from dotenv import load_dotenv, find_dotenv
+import json
 
 DEFAULT_CONTEXT = ""
 
-JSON_STYLE = """Put everything in json. Provide the results in the following json format:
+JSON_STYLE = """Create your reply so it can be easily transformed into json file. Provide the results in a list of json objects of the following object format:
+   [
     {
     "question": "What is the key difference between Python 2 and Python 3?",
     "options": [
@@ -20,17 +21,21 @@ JSON_STYLE = """Put everything in json. Provide the results in the following jso
     "correct_answer_id": 2,
     "explanation": short explanation of the correct answer in one short sentence,
     "topic":
-    }
+    }, 
+    ...
+    ]
 """
 
 class gpt_api:
     def __init__(self, key=None) -> None:
         self.model = "gpt-3.5-turbo"
         self.debug_mode = False
-
+        self.context = ""
         if key:
             self.key = key
-
+        else:
+            self.key = None
+    
     def read_key_from_file(self, file_name="api_key.txt"):
         with open(file_name, 'r') as file:
             self.key = file.readline()
@@ -46,6 +51,14 @@ class gpt_api:
             print("\nNo model has been specified!\n")
             return
         self.model = chat_model
+
+    def get_topics(self, max_topics=3):
+
+        new_promt = f"""Given my field of interest, select up to {max_topics} different topics.
+        These topics will be later used to learn about the selected field of interest.
+        The reply formating should be [topic 1, topic 2, ..., topic 5]."""
+
+        self.prompt(text=new_promt)
 
     def get_completion(self, prompt):
         messages = [{"role": "user", "content": prompt}]
@@ -64,23 +77,33 @@ class gpt_api:
         if text is None:
             raise ValueError("No text has been provided, exiting")
 
+        self.json_style(JSON_STYLE) # add json information
+
         prompt = f"{self.context}{text}"
         response = self.get_completion(prompt)
         if self.debug_mode:
             print("\nquery:\n" + prompt + "\n" + "response:\n")
             print(response)
-        return 
+        return response
+    
+    def create_prompt(self):
+        raise NotImplementedError
+    
+    def ask_prompt(self):
+        raise NotImplementedError
 
 
 ### example run
-def example_run():
+def gpt_example_run():
     tmp_api = gpt_api("catch me if you can")
     tmp_api.read_key_from_file("api_key.txt")
     tmp_api.debug(True)
     tmp_api.json_style(JSON_STYLE)
     tmp_api.prompt(text="Give me two true or false coding question answer pairs based on python, return it in json format, keep the difficulty level on very hard, provide examples for each question")
+# gpt_example_run()
 
 
+### PDF GPT
 class chatpdf_api:
     def __init__(self, key=None, pdf_path="", key_path="") -> None:
 
@@ -179,6 +202,7 @@ class chatpdf_api:
 
         self.ask_prompt(tmp_rqst)
 
+### general api
 class any_api():
     def __init__(self, api_service=None) -> None:
         self.service = api_service
@@ -191,25 +215,35 @@ class any_api():
         except:
             print("ERROR: key file doesnt exist")
 
-    def init_question(self, profile, pdf_path, opt_context, key_path=""):
+    def init_question(self, profile, pdf_path, opt_context="", key_path=""):
         
         self.key = self.read_key(key_path)
         
         if os.path.isfile(pdf_path):
             self.service = chatpdf_api(pdf_path=pdf_path, key=self.key)
+            print("Exploiting pdf")
         else:
             self.service = gpt_api(self.key)
+            print("Exploiting vanilla gpt")
 
         topics = self.service.get_topics(5)
+        self.topics = topics
 
         question = profile + f"Give me a multiple choice question regarding the provided topics {topics} from the pdf file." + JSON_STYLE
         tmp_query = self.service.create_prompt(question)
         response = self.service.ask_prompt(tmp_query)
-
         return {"topics": topics,
-                "response": response}
+                "response": json.loads(response.json()['content'])}
     
-    def reinfoce_topic(self, topic=""):
+    
+    def topic_qst(self, topic=None):
+        # given the topic, ask the api to generate a question
+        question = profile + f"Give me as many multiple choice questions as you can fully fit in one reply. These questions shoud be regarding the provided topic {topic} based on the pdf file." + JSON_STYLE
+        tmp_query = self.service.create_prompt(question)
+        response = self.service.ask_prompt(tmp_query)
+        print(response)
+
+    def reinforce_topic(self, topic=""):
         # generate more questions about a given topic
         pass    
     
@@ -220,7 +254,7 @@ class any_api():
     def adjust_difficulty_topic(topics):
         raise NotImplemented
     
-    def keep_going():
+    def keep_going(self):
         raise NotImplemented
 
 # tmp_api = chatpdf_api(pdf_path="provided_file.pdf", key_path="chatpdf_key.txt")
@@ -230,9 +264,16 @@ class any_api():
 profile_background = "junior developer"
 profile_aim = "learn python" 
 profile = f"I am a {profile_background}. I want to {profile_aim}"
-pdf = "provided_file.pdf"
+pdf = "./gpt/provided_file.pdf"
 opt_context = ""  
 
 # run question creator
 our_api = any_api()
-our_api.init_question(profile=profile, pdf_path=pdf, opt_context=opt_context, key_path="chatpdf_key.txt")
+if pdf is not None:
+    key_path = "./gpt/chatpdf_key.txt"
+else:
+    key_path = "./gpt/api_key.txt"
+
+print(our_api.init_question(profile=profile, pdf_path=pdf, opt_context=opt_context, key_path=key_path)["response"][0]['question'])
+ 
+#our_api.topic_qst("Potential impact of NanoScribe")
