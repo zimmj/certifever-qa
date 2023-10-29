@@ -22,3 +22,8 @@ reinforce_auto:
   path: "/reinforce_auto"
   methods: [ "POST" ]
   description: "Reinforce automatically based on user's performance"
+
+adjust_difficulty:
+  path: "/adjust_difficulty"
+  methods: [ "POST" ]
+  description: "Adjust difficulty based on user's feedback"

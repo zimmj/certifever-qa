@@ -16,12 +16,15 @@ class BinaryQuestion(BaseModel):
 class BinaryQuestions(BaseModel):
     data: List[BinaryQuestion]
 
+
 class TopicName(BaseModel):
     topic: str
+
 
 class UploadFile(BaseModel):
     topic: str
     file: str
+
 
 class MultipleChoiceQuestion(BaseModel):
     topic: str
@@ -34,12 +37,15 @@ class MultipleChoiceQuestion(BaseModel):
     explanation: str
     explanation: str
 
+
 class GetQuestion(BaseModel):
     id: int
+
 
 class GetBinaryQuestionsByTopicAndDifficulty(BaseModel):
     topic: str
     difficulty: int
+
 
 class CreateQuestionModelWithTopic(BaseModel):
     profile: str
@@ -62,5 +68,18 @@ class ReinforceAutoModel(BaseModel):
     incorrect_responses: List[int]
 
 
+class AdjustDifficultModel(BaseModel):
+    topic: str
+    difficulty_adjustment: int
+
+
+class Question(BaseModel):
+    question: str
+    options: List[str]
+    correct_answer_id: int
+    explanation: str
+    topic: str
+
+
 class QuestionsList(BaseModel):
-    data: List[Dict[str, Any]]
+    data: List[Question]

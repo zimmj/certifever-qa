@@ -108,3 +108,13 @@ def reinforce_auto(
 
     # mocking it here
     return mock_questions_list
+
+
+@server.post(ENDPOINTS.adjust_difficulty.path, response_model=model.QuestionsList)
+def adjust_difficulty(
+        adjust_difficulty: Annotated[model.AdjustDifficultModel, Depends()],
+):
+    # call GPTPrompter to reinforce automatically based on user's performance
+
+    # mocking it here
+    return mock_questions_list
