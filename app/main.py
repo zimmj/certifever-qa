@@ -1,13 +1,9 @@
-import json
 import logging
 from pathlib import Path
 from typing import Annotated
-from flask import Flask, jsonify
-from fastapi import Depends, APIRouter, Response
 
 from omegaconf import OmegaConf
 from fastapi import FastAPI, Depends, HTTPException
-from starlette.responses import JSONResponse
 
 from app.db.database import SessionLocal, engine, Base
 import app.response_model as model
@@ -42,70 +38,73 @@ def root():
     return {"message": "AI Prompter Server is running"}
 
 
-@server.post(ENDPOINTS.create_bin_question.path)
-def create_binary_question(
-    bin_question: Annotated[model.BinaryQuestion, Depends()],
-    bin_question_repo: Annotated[BinaryQuestionRepo, Depends(get_binary_question_repo)]
+mock_questions_list = model.QuestionsList(
+    data=[
+        {
+            "question": "blablabla",
+            "options": [
+                "AAA",
+                "BBB",
+                "CCC",
+                "DDD"
+            ],
+
+            "correct_answer_id": 2,
+            "explanation": "short explanation of the correct answer in one short sentence",
+            "topic": "topic"
+        },
+        {
+            "question": "blablabla_2",
+            "options": [
+                "AAA",
+                "BBB",
+                "CCC",
+                "DDD"
+            ],
+
+            "correct_answer_id": 2,
+            "explanation": "short explanation of the correct answer in one short sentence",
+            "topic": "topic"
+        },
+    ]
+)
+
+
+@server.post(ENDPOINTS.create_questions_with_topic.path, response_model=model.QuestionsList)
+def create_questions_with_topic(
+        create_question_model: Annotated[model.CreateQuestionModelWithTopic, Depends()],
 ):
-    logging.info("Creating question")
+    # call GPTPrompter to generate questions
 
-    # WARNING: we are not checking if there's duplicate now
-    bin_question = bin_question_repo.create(
-        topic=bin_question.topic,
-        difficulty=bin_question.difficulty,
-        question=bin_question.question,
-        correct_answer=bin_question.correct_answer,
-        explanation=bin_question.explanation,
-        example=bin_question.example
-    )
+    # mock it here
+    return mock_questions_list
 
-    return {"message": f"BinaryQuestion created successfully, id = {bin_question.id}"}
-@server.get(ENDPOINTS.get_bin_questions.path, response_model=model.BinaryQuestions)
-def get_bin_questions(
-    get_bin_question_list: Annotated[model.GetBinaryQuestionsByTopicAndDifficulty, Depends()],
-    bin_question_repo: Annotated[BinaryQuestionRepo, Depends(get_binary_question_repo)]
+
+@server.post(ENDPOINTS.create_questions_with_pdf.path, response_model=model.QuestionsList)
+def create_questions_with_pdf(
+        create_question_model: Annotated[model.CreateQuestionModelWithPdf, Depends()],
 ):
-    questions = bin_question_repo.getBinaryQuestionsByTopicAndDifficulty(get_bin_question_list.topic
-                                                                         , get_bin_question_list.difficulty)
-    modelQL = []
-    for q in questions:
-        entry = model.BinaryQuestion(
-            topic=q.topic,
-            difficulty=q.difficulty,
-            question=q.question,
-            correct_answer=q.correct_answer,
-            explanation=q.explanation,
-            example=q.example
-        )
-        modelQL.append(entry)
+    # call GPTPrompter to generate questions
 
-    return model.BinaryQuestions(data=modelQL)
+    # mock it here
+    return mock_questions_list
 
-@server.post(ENDPOINTS.create_bin_quiz_by_uploading_file.path, response_model=model.TopicName)
-def create_bin_quiz_by_uploading_file(
-        upload_file: Annotated[model.UploadFile, Depends()],
-        bin_question_repo: Annotated[BinaryQuestionRepo, Depends(get_binary_question_repo)]
+
+@server.post(ENDPOINTS.reinforce_on_topics.path, response_model=model.QuestionsList)
+def reinforce_on_topics(
+        reinforcement_topics: Annotated[model.ReinforceTopicModel, Depends()],
 ):
+    # call GPTPrompter to reinforce on topics
 
-    return model.TopicName(topic="upload_file_name")
+    # mocking it here
+    return mock_questions_list
 
-@server.get(ENDPOINTS.get_bin_question.path, response_model=model.BinaryQuestion)
-def get_bin_question(
-        get_bin_question_model: Annotated[model.GetQuestion, Depends()],
-        bin_question_repo: Annotated[BinaryQuestionRepo, Depends(get_binary_question_repo)]
+
+@server.post(ENDPOINTS.reinforce_auto.path, response_model=model.QuestionsList)
+def reinforce_auto(
+        reinforcement_auto: Annotated[model.ReinforceAutoModel, Depends()],
 ):
-    logging.info(f"Getting question of id {get_bin_question_model.id}")
+    # call GPTPrompter to reinforce automatically based on user's performance
 
-    q = bin_question_repo.get(get_bin_question_model.id)
-    if q is None:
-        logging.error(f"BinaryQuestion of id {get_bin_question_model.id} not found")
-        raise HTTPException(status_code=404, detail="BinaryQuestion not found")
-
-    return model.BinaryQuestion(
-        topic=q.topic,
-        difficulty=q.difficulty,
-        question=q.question,
-        correct_answer=q.correct_answer,
-        explanation=q.explanation,
-        example=q.example
-    )
+    # mocking it here
+    return mock_questions_list

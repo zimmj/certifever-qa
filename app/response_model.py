@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
+import fastapi
 from pydantic import BaseModel
 
 
@@ -39,3 +40,27 @@ class GetQuestion(BaseModel):
 class GetBinaryQuestionsByTopicAndDifficulty(BaseModel):
     topic: str
     difficulty: int
+
+class CreateQuestionModelWithTopic(BaseModel):
+    profile: str
+    intent: str
+    topic: str
+
+
+class CreateQuestionModelWithPdf(BaseModel):
+    profile: str
+    intent: str
+    pdf_file: fastapi.UploadFile
+
+
+class ReinforceTopicModel(BaseModel):
+    topics: List[str]
+
+
+class ReinforceAutoModel(BaseModel):
+    correct_responses: List[int]
+    incorrect_responses: List[int]
+
+
+class QuestionsList(BaseModel):
+    data: List[Dict[str, Any]]

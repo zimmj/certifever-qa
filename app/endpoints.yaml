@@ -3,23 +3,22 @@ root:
   methods: ["GET"]
   description: "Root endpoint"
 
-create_bin_question:
-  path: "/create_bin_question"
-  methods: ["POST"]
-  description: "Create a new binary question"
+create_questions_with_topic:
+  path: "/create_questions_with_topic"
+  methods: [ "POST" ]
+  description: "Create a quiz by providing topic"
 
-get_bin_questions:
-  path: "/get_bin_questions"
-  methods: [ "GET" ]
-  description: "Get bin question list by difficulty level"
-
-create_bin_quiz_by_uploading_file:
-  path: "/create_bin_quiz_by_uploading_file"
+create_questions_with_pdf:
+  path: "/create_questions_with_pdf"
   methods: [ "POST" ]
   description: "Create a quiz by uploading a file"
 
+reinforce_on_topics:
+  path: "/reinforce_on_topics"
+  methods: [ "POST" ]
+  description: "Reinforce on topics"
 
-get_bin_question:
-  path: "/get_bin_question"
-  methods: ["GET"]
-  description: "Get a binary question"
+reinforce_auto:
+  path: "/reinforce_auto"
+  methods: [ "POST" ]
+  description: "Reinforce automatically based on user's performance"
