@@ -2,6 +2,8 @@ import logging
 from pathlib import Path
 from typing import Annotated
 
+from fastapi.middleware.cors import CORSMiddleware
+
 from omegaconf import OmegaConf
 from fastapi import FastAPI, Depends, HTTPException
 
@@ -12,6 +14,19 @@ from gpt.chatpdf_api import any_api
 
 logger = logging.getLogger(__name__)
 server = FastAPI()
+
+origins = ["*"]
+
+server.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+
 ENDPOINTS_FILE = Path(__file__).parent.resolve() / "endpoints.yaml"
 ENDPOINTS = OmegaConf.load(ENDPOINTS_FILE)
 
