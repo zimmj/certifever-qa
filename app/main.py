@@ -8,11 +8,15 @@ from fastapi import FastAPI, Depends, HTTPException
 from app.db.database import SessionLocal, engine, Base
 import app.response_model as model
 from app.db.crud import BinaryQuestionRepo
+from gpt.chatpdf_api import any_api
 
 logger = logging.getLogger(__name__)
 server = FastAPI()
 ENDPOINTS_FILE = Path(__file__).parent.resolve() / "endpoints.yaml"
 ENDPOINTS = OmegaConf.load(ENDPOINTS_FILE)
+
+key_path_pdf = "gpt/chatpdf_key.txt"
+key_path = "gpt/api_key.txt"
 
 
 def get_db():
@@ -70,24 +74,53 @@ mock_questions_list = model.QuestionsList(
 )
 
 
+def prepare_question_response(result):
+    response = result["response"]
+
+    l = []
+    for r in response:
+        print(r)
+        q = model.Question(
+            question=r["question"],
+            options=r["options"],
+            correct_answer_id=r["correct_answer_id"],
+            explanation=r["explanation"],
+            topic=r["topic"]
+        )
+        l.append(q)
+
+    return model.QuestionsList(
+        data=l
+    )
+
+
 @server.post(ENDPOINTS.create_questions_with_topic.path, response_model=model.QuestionsList)
 def create_questions_with_topic(
         create_question_model: Annotated[model.CreateQuestionModelWithTopic, Depends()],
 ):
-    # call GPTPrompter to generate questions
-
-    # mock it here
-    return mock_questions_list
+    profile = f"I am a {create_question_model.profile}. I want to learn for {create_question_model.intent}"
+    # run question creator
+    our_api = any_api()
+    result = our_api.init_question(profile=profile, key_path=key_path)
+    return prepare_question_response(result)
 
 
 @server.post(ENDPOINTS.create_questions_with_pdf.path, response_model=model.QuestionsList)
 def create_questions_with_pdf(
         create_question_model: Annotated[model.CreateQuestionModelWithPdf, Depends()],
 ):
-    # call GPTPrompter to generate questions
+    in_file = create_question_model.pdf_file
+    file_location = f"{in_file.filename}"
 
-    # mock it here
-    return mock_questions_list
+    with open(file_location, "wb+") as file_object:
+        file_object.write(in_file.file.read())
+
+    profile = f"I am a {create_question_model.profile}. I want to {create_question_model.intent}"
+    # run question creator
+    our_api = any_api()
+    result = our_api.init_question(profile=profile, pdf_path=file_location, key_path=key_path_pdf)
+
+    return prepare_question_response(result)
 
 
 @server.post(ENDPOINTS.reinforce_on_topics.path, response_model=model.QuestionsList)

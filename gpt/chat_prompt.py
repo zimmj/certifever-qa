@@ -4,7 +4,7 @@
 
 import openai
 import os
-from dotenv import load_dotenv, find_dotenv
+
 
 DEFAULT_CONTEXT = ""
 
@@ -31,7 +31,7 @@ class gpt_api:
 
         # _ = load_dotenv(find_dotenv())
 
-    def read_key_from_file(self, file_name="api_key.txt"):
+    def read_key_from_file(self, file_name="gpt/api_key.txt"):
         with open(file_name, 'r') as file:
             self.key = file.readline()
 
@@ -77,7 +77,7 @@ class gpt_api:
 
 def example_run():
     tmp_api = gpt_api("catch me if you can")
-    tmp_api.read_key_from_file("api_key.txt")
+    tmp_api.read_key_from_file("gpt/api_key.txt")
     tmp_api.debug(True)
     tmp_api.json_style(JSON_STYLE)
     tmp_api.prompt(text="Give me two true or false coding question answer pairs based on python, return it in json format, keep the difficulty level on very hard, provide examples for each question")
